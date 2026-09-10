@@ -1,0 +1,9 @@
+O Black Widow é um robô de combate com tração diferencial, desenvolvido para a disciplina de Robótica da Universidade São Francisco. A estrutura é formada por duas chapas de alumínio de 2 mm, base e tampa, compondo um chassi de 280 x 190 x 80 mm, com 244 mm de largura total quando consideradas as rodas. Na dianteira, uma rampa de chapa de aço inclinada em aproximadamente 24 graus atua como dispositivo de ataque, com a função de se encaixar sob o adversário e desestabilizá-lo.
+
+A locomoção é feita por dois motores de corrente contínua de 12 V com redução, modelo JGB37-520, montados no eixo traseiro e equipados com encoders de quadratura integrados. Esses encoders permitem medir a velocidade real de cada roda e implementar controle em malha fechada, corrigindo desvios de trajetória. Uma roda boba dianteira completa o apoio, resultando em uma configuração de três pontos que garante estabilidade sem exigir sistema de suspensão.
+
+O sistema elétrico parte de uma bateria LiFePO4 de 12,8 V e 6 Ah, escolhida pela alta corrente de descarga e pela maior segurança térmica em comparação às células de lítio convencionais. A energia passa por uma chave geral e por um fusível de 20 A, itens obrigatórios de segurança, e então se divide em dois caminhos. Os 12 V brutos alimentam dois módulos de ponte H BTS7960, sendo um módulo para cada motor, e um conversor DC-DC LM2596 reduz a tensão para 5 V, alimentando a lógica das pontes e o microcontrolador.
+
+O controle é executado por um ESP32-DevKit-V1, responsável por gerar os sinais PWM de acionamento e por ler os pulsos dos encoders. Os canais dos encoders foram ligados aos GPIO 34, 35, 36 e 39, que são entradas exclusivas do microcontrolador, e são alimentados em 3,3 V para respeitar o limite de tensão dos pinos do ESP32.
+
+A massa total estimada do robô é de 2,7 kg e o custo total do projeto é de R$ 1.025,00, dentro do teto orçamentário de R$ 1.200,00.

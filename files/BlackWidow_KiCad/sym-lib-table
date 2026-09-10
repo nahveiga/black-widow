@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "BlackWidow")(type "KiCad")(uri "${KIPRJMOD}/bibliotecas/BlackWidow.kicad_sym")(options "")(descr "Componentes do robo Black Widow - USF Robotica"))
+)
