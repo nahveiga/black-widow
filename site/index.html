@@ -239,98 +239,32 @@
       </div>
     </section>
 
-    <!-- ============================ GALERIA ============================= -->
-    <section id="galeria" aria-labelledby="t-galeria">
+    <!-- =========================== EVIDÊNCIAS =========================== -->
+    <!-- Montada por js/evidencias.js a partir de js/dados-evidencias.js.
+         Reúne fotos, vídeo e também o que ainda FALTA registrar: os cards
+         tracejados deixam a lacuna visível em vez de escondê-la. -->
+    <section id="evidencias" aria-labelledby="t-evidencias">
       <div class="conteudo">
         <p class="rotulo">Registro</p>
-        <h2 class="titulo-secao" id="t-galeria">Galeria</h2>
+        <h2 class="titulo-secao" id="t-evidencias">Evidências</h2>
 
-        <div class="galeria-grade">
+        <p class="texto-sec evidencias-resumo">
+          Registro fotográfico e em vídeo das etapas do projeto:
+          <strong><span data-evidencias-ok>0</span> de
+          <span data-evidencias-total>0</span></strong> já documentadas.
+          Os cards com contorno tracejado indicam registros ainda pendentes.
+        </p>
 
-          <figure class="galeria-item">
-            <!-- O gatilho do lightbox é um <button>: clicável por teclado e
-                 anunciado como botão, ao contrário de uma <div> com onclick. -->
-            <button type="button" class="galeria-botao"
-                    data-lightbox-abrir
-                    data-src="img/prototipo.jpg"
-                    data-alt="Prancha de concepção do robô R3 com vistas técnicas e distribuição interna dos componentes."
-                    data-legenda="Prancha de concepção — vistas técnicas e distribuição interna">
-              <picture>
-                <source srcset="img/prototipo.webp" type="image/webp">
-                <img src="img/prototipo.jpg"
-                     alt="Prancha de concepção do robô R3 reunindo vista superior, frontal e lateral, o esquema de distribuição interna dos componentes e a lista de características."
-                     width="1402" height="1122" loading="lazy" decoding="async">
-              </picture>
-            </button>
-            <figcaption>
-              <strong>Concepção</strong>
-              Prancha de estudo do robô com vistas superior, frontal e lateral,
-              distribuição interna dos componentes e cotas gerais.
-              Clique para ampliar e ler as anotações.
-            </figcaption>
-          </figure>
+        <ul class="evidencias-lista" data-evidencias></ul>
 
-          <figure class="galeria-item">
-            <button type="button" class="galeria-botao"
-                    data-lightbox-abrir
-                    data-src="img/robo-montado.jpg"
-                    data-alt="Chassi de acrílico do robô montado, segurado na mão, com rodas amarelas, motores e a eletrônica de controle em protoboard."
-                    data-legenda="Montagem atual — chassi, rodas e eletrônica em protoboard">
-              <picture>
-                <source srcset="img/robo-montado.webp" type="image/webp">
-                <img src="img/robo-montado.jpg"
-                     alt="Chassi de acrílico transparente do robô segurado na mão, com rodas amarelas e pretas, motores fixados e a eletrônica de controle montada em protoboard com diversos jumpers."
-                     width="1200" height="1600" loading="lazy" decoding="async">
-              </picture>
-            </button>
-            <figcaption>
-              <strong>Montagem</strong>
-              Chassi com as rodas e os motores instalados e a eletrônica de
-              controle em protoboard — estágio atual do projeto.
-            </figcaption>
-          </figure>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================= VÍDEO ============================== -->
-    <section id="video" aria-labelledby="t-video">
-      <div class="conteudo">
-        <p class="rotulo">Ensaio</p>
-        <h2 class="titulo-secao" id="t-video">Funcionamento</h2>
-
-        <div class="video-bloco">
-          <!-- O arquivo foi gravado em retrato (478x850). A moldura segue a
-               mesma proporção 9:16 para não sobrar tarja preta no player.
-               preload="metadata" baixa só o cabeçalho: o vídeo inteiro
-               (3,4 MB) só desce se a pessoa der play. Sem autoplay. -->
-          <div class="video-moldura">
-            <video controls preload="metadata" playsinline
-                   poster="img/poster-video.jpg"
-                   width="478" height="850">
-              <source src="videos/funcionamento.mp4" type="video/mp4">
-              <p>
-                Seu navegador não reproduz vídeo HTML5.
-                <a href="videos/funcionamento.mp4">Baixe o vídeo do funcionamento</a>.
-              </p>
-            </video>
-          </div>
-
-          <div class="video-info">
-            <p>
-              Registro do acionamento dos motores traseiros a partir da
-              eletrônica de controle montada em protoboard. O teste verifica o
-              sentido de rotação e a resposta de cada motor de forma
-              independente — base para o controle diferencial do robô.
-            </p>
-            <ul class="video-dados">
-              <li><span>Duração</span> <b>17 s</b></li>
-              <li><span>Formato</span> <b>MP4 · 478×850</b></li>
-              <li><span>Etapa</span> <b>Eletrônica de controle</b></li>
-            </ul>
-          </div>
-        </div>
+        <noscript>
+          <p class="preview-estado" style="margin-top: 24px;">
+            Esta seção é montada com JavaScript. Com o JavaScript desativado, a
+            lista completa pode ser lida em <code>js/dados-evidencias.js</code>,
+            e os arquivos estão nas pastas <code>img/</code> e
+            <code>videos/</code>.
+          </p>
+        </noscript>
       </div>
     </section>
 
@@ -388,7 +322,12 @@
     </div>
   </dialog>
 
+  <!-- dados-evidencias.js precisa vir ANTES de evidencias.js: é dele que sai
+       o array. A ordem em relação a comum.js é indiferente - o lightbox usa
+       delegação de eventos e por isso também pega os cards criados depois. -->
   <script src="js/comum.js"></script>
+  <script src="js/dados-evidencias.js"></script>
+  <script src="js/evidencias.js"></script>
   <script src="js/hero.js"></script>
 </body>
 </html>

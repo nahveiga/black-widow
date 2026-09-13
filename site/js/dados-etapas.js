@@ -11,7 +11,7 @@
        "andamento"  -> vermelho, icone cheio, pulsando
        "pendente"   -> cinza, icone vazio, contorno tracejado
 
-   O campo "nota" e opcional; quando existe, aparece como texto de apoio.
+   O campo "descricao" e o paragrafo exibido abaixo do titulo.
 
    OBS 1: o arquivo esta em UTF-8. Os textos visiveis levam acentuacao
    normal do portugues - a regra de "sem acentos" vale so para NOME DE
@@ -19,7 +19,7 @@
 
    OBS 2: usamos script classico (sem "type=module" / import) de proposito.
    Modulos ES sao bloqueados por CORS no protocolo file://, e um dos
-   requisitos do projeto e o site abrir com duplo clique no arquivo.
+   requisitos do projeto e o site abrir com duplo clique.
    ========================================================================= */
 
 // Namespace global do site, compartilhado entre os scripts.
@@ -30,73 +30,139 @@ window.BW.etapas = [
   {
     titulo: "Definição do conceito e do projeto do robô",
     status: "concluido",
-    nota: "Arquitetura de três rodas com tração diferencial nas duas traseiras."
+    descricao: "Levantamento dos requisitos da disciplina e definição da " +
+      "arquitetura do robô. Optou-se por uma configuração de três rodas, com " +
+      "duas rodas traseiras motorizadas individualmente e uma roda dianteira " +
+      "livre, apenas de apoio. Essa escolha permite tração diferencial: " +
+      "variando a velocidade e o sentido de cada motor traseiro de forma " +
+      "independente, o robô avança, recua e gira sobre o próprio eixo sem " +
+      "necessidade de sistema de direção. Definiu-se também a rampa frontal " +
+      "como elemento de combate."
   },
   {
     titulo: "Levantamento de componentes e orçamento",
     status: "concluido",
-    nota: "Planilha de custos disponível na página Orçamento."
+    descricao: "Especificação de todos os componentes eletrônicos, mecânicos " +
+      "e estruturais necessários, com pesquisa de preços e fornecedores. O " +
+      "resultado foi consolidado em planilha de orçamento, disponível para " +
+      "consulta na aba Orçamento. A definição antecipada dos componentes foi " +
+      "necessária para dimensionar corretamente o chassi e a alimentação do " +
+      "sistema."
   },
   {
     titulo: "Compra das peças",
-    status: "concluido"
+    status: "concluido",
+    descricao: "Aquisição dos componentes especificados no orçamento, " +
+      "incluindo microcontrolador ESP32, módulo ponte H, motores de corrente " +
+      "contínua, rodas, bateria e materiais estruturais."
   },
   {
     titulo: "Montagem do chassi",
-    status: "concluido"
+    status: "concluido",
+    descricao: "Montagem básica da estrutura base do robô."
   },
   {
     titulo: "Instalação das rodas",
     status: "concluido",
-    nota: "Duas rodas traseiras motorizadas e uma dianteira livre, de apoio."
+    descricao: "Fixação das duas rodas traseiras motorizadas e da roda " +
+      "dianteira de apoio. Verificou-se o nivelamento do conjunto para que as " +
+      "três rodas mantivessem contato simultâneo com o solo, condição " +
+      "necessária para a estabilidade durante o combate."
   },
   {
     titulo: "Instalação e fixação dos motores",
-    status: "concluido"
+    status: "concluido",
+    descricao: "Montagem dos dois motores de corrente contínua na estrutura " +
+      "traseira e acoplamento aos eixos das rodas. A fixação rígida é " +
+      "essencial: folga no suporte gera vibração e perda de torque no impacto " +
+      "contra o robô adversário."
   },
 
   // --------------------------- EM ANDAMENTO -----------------------------
   {
-    titulo: "Eletrônica de controle — ESP32 + ponte H L298N",
+    titulo: "Eletrônica de controle: ESP32 + ponte H L298N",
     status: "andamento",
-    nota: "Ligação do microcontrolador à ponte H e à alimentação."
+    descricao: "Montagem do circuito de acionamento. O ESP32 atua como " +
+      "unidade de processamento e o módulo L298N como ponte H, recebendo os " +
+      "sinais de controle e chaveando a potência dos motores. Cada canal do " +
+      "driver utiliza dois pinos digitais para definir o sentido de rotação e " +
+      "um pino habilitador, que recebe o sinal PWM responsável pelo controle " +
+      "de velocidade. O terra do ESP32 e o do driver são interligados, pois o " +
+      "sinal PWM precisa de referência comum para ser interpretado " +
+      "corretamente."
   },
   {
-    titulo: "Firmware V1 — controle por Wi-Fi",
+    titulo: "Firmware V1: controle por Wi-Fi",
     status: "andamento",
-    nota: "ESP32 operando em modo Access Point, sem depender de rede externa."
+    descricao: "Desenvolvimento do firmware em C++ na IDE Arduino. O ESP32 é " +
+      "configurado em modo Access Point, criando a própria rede Wi-Fi e " +
+      "dispensando roteador externo — o operador conecta diretamente ao robô. " +
+      "O firmware implementa as rotinas de movimento (avanço, recuo, giro à " +
+      "esquerda, giro à direita, parada por inércia e frenagem ativa), geração " +
+      "de PWM por hardware através do periférico LEDC e um watchdog de " +
+      "segurança que corta os motores caso nenhum comando seja recebido dentro " +
+      "do intervalo estabelecido, evitando que o robô continue acelerando em " +
+      "caso de falha de comunicação."
   },
   {
     titulo: "Interface web de controle",
     status: "andamento",
-    nota: "Página servida pelo próprio ESP32 para comandar o robô."
+    descricao: "Desenvolvimento da interface de operação em HTML, CSS e " +
+      "JavaScript, embarcada na memória do próprio ESP32 e servida por " +
+      "requisição HTTP. A escolha por interface web dispensa a instalação de " +
+      "aplicativo e funciona em qualquer dispositivo com navegador. A " +
+      "interface possui grade direcional acionada por toque, ajuste contínuo " +
+      "de velocidade, indicador de estado da conexão e botão de parada de " +
+      "emergência."
   },
 
   // ----------------------------- PENDENTE -------------------------------
   {
-    titulo: "Testes de movimentação e calibração dos motores",
-    status: "pendente"
+    titulo: "Testes de movimentação e calibração",
+    status: "pendente",
+    descricao: "Verificação do sentido de rotação de cada motor, da resposta " +
+      "ao ajuste de velocidade e do funcionamento do watchdog, inicialmente " +
+      "com o robô suspenso e as rodas livres. Em seguida, calibração dos " +
+      "fatores de compensação entre os motores: como não há encoders, a " +
+      "diferença natural de rendimento entre os dois motores é corrigida em " +
+      "malha aberta, ajustando empiricamente a potência de cada lado até que o " +
+      "robô descreva trajetória retilínea."
   },
   {
     titulo: "Projeto e fabricação da rampa frontal",
     status: "pendente",
-    nota: "Estrutura em rampa para atingir e deslocar o robô adversário."
+    descricao: "Projeto da estrutura de combate em formato de rampa, " +
+      "considerando resistência mecânica, estabilidade e distribuição de peso. " +
+      "A geometria em rampa tem por função posicionar-se sob o robô adversário " +
+      "durante o contato, transferindo o impulso para desestabilizá-lo e " +
+      "deslocá-lo."
   },
   {
     titulo: "Integração da rampa ao chassi",
-    status: "pendente"
+    status: "pendente",
+    descricao: "Fixação da rampa à estrutura e verificação do comportamento " +
+      "do conjunto. O deslocamento do centro de massa para a frente será " +
+      "avaliado, pois afeta diretamente a tração das rodas traseiras e a " +
+      "estabilidade do robô."
   },
   {
     titulo: "Migração para controle Bluetooth (V2)",
-    status: "pendente"
+    status: "pendente",
+    descricao: "Substituição do enlace Wi-Fi por comunicação Bluetooth com " +
+      "controle físico. O firmware foi estruturado com a camada de comando " +
+      "isolada das rotinas de motor, de modo que a migração exige apenas a " +
+      "troca da origem do comando, sem reescrever a lógica de movimentação."
   },
   {
     titulo: "Testes finais e ajustes",
-    status: "pendente"
+    status: "pendente",
+    descricao: "Ensaios do conjunto completo, avaliação de autonomia da " +
+      "bateria, aquecimento do driver e comportamento em situação de impacto."
   },
   {
     titulo: "Entrega e apresentação",
-    status: "pendente"
+    status: "pendente",
+    descricao: "Apresentação do robô e da documentação do projeto."
   }
 ];
 

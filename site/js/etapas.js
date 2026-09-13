@@ -62,11 +62,11 @@
     cabecalho.appendChild(status);
     corpo.appendChild(cabecalho);
 
-    if (etapa.nota) {
-      var nota = document.createElement('p');
-      nota.className = 'etapa-nota';
-      nota.textContent = etapa.nota;
-      corpo.appendChild(nota);
+    if (etapa.descricao) {
+      var descricao = document.createElement('p');
+      descricao.className = 'etapa-descricao';
+      descricao.textContent = etapa.descricao;
+      corpo.appendChild(descricao);
     }
 
     item.appendChild(marcador);

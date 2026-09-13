@@ -14,6 +14,7 @@ duplo clique e sobe no GitHub Pages sem nenhuma configuração.
 - [Como rodar localmente](#como-rodar-localmente)
 - [Estrutura de arquivos](#estrutura-de-arquivos)
 - [Como atualizar o status das etapas](#como-atualizar-o-status-das-etapas)
+- [Como adicionar uma evidência](#como-adicionar-uma-evidência)
 - [Como trocar as fotos](#como-trocar-as-fotos)
 - [O hero e seus 4 modos](#o-hero-e-seus-4-modos)
 - [Como gerar os 36 frames a partir de um CAD](#como-gerar-os-36-frames-a-partir-de-um-cad)
@@ -68,6 +69,8 @@ site/
 │   ├── comum.js                Lightbox, ano do rodapé, progressive enhancement
 │   ├── dados-etapas.js         ⭐ AS ETAPAS DO PROJETO (edite só este)
 │   ├── etapas.js               Monta a timeline e calcula o progresso
+│   ├── dados-evidencias.js     ⭐ AS EVIDÊNCIAS (fotos/vídeo — edite só este)
+│   ├── evidencias.js           Monta os cards de evidência
 │   ├── hero.js                 Hero com rotação controlada pelo scroll
 │   ├── orcamento.js            Leitura da planilha com SheetJS
 │   └── r3-model.js             Modelo 3D do robô, montado por código

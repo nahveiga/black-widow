@@ -25,7 +25,6 @@
 
   // ------------------------------ LIGHTBOX --------------------------------
   var dialogo = document.querySelector('[data-lightbox]');
-  var gatilhos = document.querySelectorAll('[data-lightbox-abrir]');
 
   // <dialog> sem showModal (navegador antigo): deixamos os links de imagem
   // funcionando como navegação normal em vez de quebrar o clique.
@@ -72,12 +71,20 @@
     aoFechar();
   }
 
-  for (var g = 0; g < gatilhos.length; g++) {
-    gatilhos[g].addEventListener('click', function (ev) {
-      ev.preventDefault();
-      abrir(ev.currentTarget);
-    });
-  }
+  /* Delegação no documento em vez de um listener por botão.
+     Os cards de evidência são criados por js/evidencias.js DEPOIS que este
+     script roda; com listeners presos a cada botão, eles dependeriam da
+     ordem das tags <script> e parariam de abrir se a ordem mudasse.
+     Assim, qualquer elemento com data-lightbox-abrir funciona, inclusive os
+     criados depois. */
+  document.addEventListener('click', function (ev) {
+    var gatilho = ev.target && ev.target.closest
+      ? ev.target.closest('[data-lightbox-abrir]')
+      : null;
+    if (!gatilho) { return; }
+    ev.preventDefault();
+    abrir(gatilho);
+  });
 
   // Botão de fechar
   var botaoFechar = dialogo.querySelector('[data-lightbox-fechar]');

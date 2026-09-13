@@ -8,10 +8,9 @@
      03. Textura de fundo
      04. Utilitarios de texto (rotulos estilo HUD)
      05. Navegacao
-     06. Hero (3 modos: frames / 3D / fallback)
+     06. Hero (modos: frames / 3D / modelo procedural / parallax)
      07. Secoes, cards e especificacoes
-     08. Galeria e lightbox
-     09. Video
+     08. Evidencias e lightbox
      10. Integrantes
      11. Timeline (pagina Etapas)
      12. Orcamento
@@ -633,56 +632,179 @@ section { padding-block: clamp(56px, 9vw, 104px); }
   letter-spacing: 0.01em;
 }
 
-/* ======================= 08. GALERIA E LIGHTBOX ========================= */
-.galeria-grade {
+/* ===================== 08. EVIDÊNCIAS E LIGHTBOX ======================== */
+/* Lista de registros do projeto (fotos, vídeo e os que ainda faltam).
+   Cada item: mídia à esquerda, descrição à direita; empilha no celular. */
+.evidencias-resumo {
+  max-width: 68ch;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.evidencias-resumo strong { color: var(--texto); font-weight: 600; }
+
+.evidencias-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: 20px;
+  gap: 18px;
 }
 
-.galeria-item {
-  position: relative;
-  margin: 0;
+.evidencia {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: clamp(18px, 3vw, 34px);
+  align-items: start;
+  background: var(--superficie);
   border: 1px solid var(--borda);
   border-radius: var(--raio);
-  background: var(--superficie);
-  overflow: hidden;
+  padding: clamp(16px, 2.4vw, 22px);
+  /* Estado inicial da animação de entrada; .visivel vem do
+     IntersectionObserver. Sem JS, a regra .sem-js mantém tudo visível. */
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 520ms ease, transform 520ms ease, border-color var(--transicao);
+}
+.evidencia.visivel { opacity: 1; transform: none; }
+
+/* Pendente: fundo transparente e contorno tracejado - a lacuna fica
+   visível, mas sem competir com as evidências que já existem. */
+.evidencia--pendente {
+  background: transparent;
+  border-style: dashed;
 }
 
-.galeria-botao {
+/* ----------------------------- mídia ----------------------------------- */
+.evidencia-botao {
   display: block;
   width: 100%;
   padding: 0;
-  border: 0;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
   background: none;
   cursor: zoom-in;
   line-height: 0;
+  overflow: hidden;
 }
-.galeria-botao img {
+.evidencia-botao img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity var(--transicao);
 }
-.galeria-botao:hover img { transform: scale(1.04); opacity: 0.9; }
+.evidencia-botao:hover img { transform: scale(1.04); opacity: 0.9; }
 
-.galeria-item figcaption {
-  padding: 14px 18px;
-  border-top: 1px solid var(--borda);
-  font-size: 0.875rem;
-  color: var(--texto-sec);
-  line-height: 1.5;
+/* O vídeo foi gravado em retrato (478x850): moldura 9:16 para não sobrar
+   tarja preta. O fundo usa a cor do site para as tarjas do poster sumirem. */
+.evidencia-video {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--fundo);
+  overflow: hidden;
+  aspect-ratio: 9 / 16;
+  max-width: 250px;
 }
-.galeria-item figcaption strong {
-  display: block;
+.evidencia-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--fundo);
+}
+
+/* Espaço reservado das evidências pendentes */
+.evidencia-vazia {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  aspect-ratio: 4 / 3;
+  padding: 16px;
+  text-align: center;
+  border: 1px dashed var(--borda);
+  border-radius: var(--raio);
+  color: var(--texto-sec);
+}
+.evidencia-vazia-icone { font-size: 26px; line-height: 1; opacity: 0.55; }
+.evidencia-vazia-texto {
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------- descrição -------------------------------- */
+.evidencia-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+/* Selo com ícone E texto: a informação nunca depende só da cor. */
+.evidencia-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--fonte-mono);
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--texto);
-  margin-bottom: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--fundo);
+  color: var(--texto-sec);
+  white-space: nowrap;
 }
+.evidencia-selo--ok {
+  color: var(--sucesso);
+  border-color: rgba(38, 194, 129, 0.45);
+  background: rgba(38, 194, 129, 0.1);
+}
+.evidencia-selo--pendente { border-style: dashed; }
+.evidencia-icone { font-size: 11px; line-height: 1; }
+
+.evidencia-titulo {
+  font-family: var(--fonte-display);
+  font-size: 1.18rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.22;
+  margin: 0 0 10px;
+}
+
+.evidencia-rotulo-tarefa {
+  margin: 0 0 6px;
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--acento-texto);
+}
+
+.evidencia-tarefa {
+  margin: 0;
+  font-size: 0.925rem;
+  line-height: 1.62;
+  color: var(--texto-sec);
+  max-width: 72ch;
+}
+
+.evidencia-detalhe {
+  margin: 14px 0 0;
+  padding-top: 11px;
+  border-top: 1px dashed var(--borda);
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+
+/* Sem JS não há observer para revelar os cards: o conteúdo continua visível. */
+.sem-js .evidencia { opacity: 1 !important; transform: none !important; }
+
 
 /* Lightbox: <dialog> nativo cuida de foco, Esc e camada por cima */
 .lightbox {
@@ -733,55 +855,6 @@ section { padding-block: clamp(56px, 9vw, 104px); }
   cursor: pointer;
 }
 .lightbox-fechar:hover { background: var(--superficie-alta); }
-
-/* ============================= 09. VIDEO ================================ */
-/* O video do robo foi gravado em retrato (478x850). Por isso a moldura e
-   estreita e centralizada: um player 16/9 deixaria tarjas enormes. */
-.video-bloco {
-  display: grid;
-  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
-  gap: clamp(24px, 4vw, 48px);
-  align-items: center;
-}
-.video-moldura {
-  border: 1px solid var(--borda);
-  border-radius: var(--raio);
-  /* Mesmo tom do fundo do site (e das tarjas do poster, geradas nessa cor):
-     assim as tarjas do poster somem na moldura em vez de virarem um
-     retângulo mais claro. Durante a reprodução o vídeo preenche tudo. */
-  background: var(--fundo);
-  overflow: hidden;
-  /* 9/16 casa com a proporcao real do arquivo */
-  aspect-ratio: 9 / 16;
-  max-height: 74svh;
-}
-.video-moldura video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: var(--fundo);
-}
-.video-info p { max-width: 52ch; }
-.video-dados {
-  list-style: none;
-  margin: 22px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-  font-family: var(--fonte-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--texto-sec);
-}
-.video-dados li {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  border-bottom: 1px dashed var(--borda);
-  padding-bottom: 9px;
-}
-.video-dados b { color: var(--texto); font-weight: 500; }
 
 /* ========================= 10. INTEGRANTES ============================== */
 .equipe-grade {
@@ -992,10 +1065,15 @@ section { padding-block: clamp(56px, 9vw, 104px); }
   border: 1px solid;
   white-space: nowrap;
 }
-.etapa-nota {
-  margin: 6px 0 0;
-  font-size: 0.9rem;
+/* Parágrafo descritivo da etapa. max-width em "ch" limita a linha a um
+   comprimento confortável de leitura - linha muito longa faz o olho perder
+   a próxima ao voltar da margem. */
+.etapa-descricao {
+  margin: 10px 0 0;
+  font-size: 0.925rem;
+  line-height: 1.62;
   color: var(--texto-sec);
+  max-width: 78ch;
 }
 
 /* -- Estado CONCLUIDO: verde, icone v, titulo riscado, opacidade menor -- */
@@ -1280,9 +1358,14 @@ section { padding-block: clamp(56px, 9vw, 104px); }
   .hero-midia { grid-row: 1; max-width: 380px; }
   .hero--scrollavel { min-height: 200vh; }
 
-  .resumo-grade,
-  .video-bloco { grid-template-columns: 1fr; }
-  .video-moldura { max-width: 320px; margin-inline: auto; }
+  .resumo-grade { grid-template-columns: 1fr; }
+
+  /* Evidências passam a empilhar: mídia em cima, descrição embaixo.
+     A mídia ganha largura máxima porque, ocupando a linha inteira, uma foto
+     4:3 ficaria alta demais e empurraria a descrição para fora da tela. */
+  .evidencia { grid-template-columns: 1fr; }
+  .evidencia-midia { max-width: 420px; }
+  .evidencia-video { max-width: 240px; }
 
   .orcamento-topo { grid-template-columns: 1fr; }
 }
@@ -1333,6 +1416,7 @@ section { padding-block: clamp(56px, 9vw, 104px); }
   }
   .etapa { opacity: 1 !important; transform: none !important; }
   .etapa--concluido { opacity: 0.72 !important; }
+  .evidencia { opacity: 1 !important; transform: none !important; }
   .hero-glow { animation: none; opacity: 0.8; }
   .hero-scroll::after { animation: none; opacity: 0.6; }
   /* Sem trilho de scroll: o hero volta a ter uma tela de altura */
