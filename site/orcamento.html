@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="sem-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Orçamento | Black Widow — Robô de Combate</title>
+  <meta name="description" content="Planilha de orçamento do robô de combate Black Widow: componentes, quantidades e valores estimados, com download do arquivo original em XLSX.">
+  <meta name="theme-color" content="#08080B">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Orçamento — Black Widow">
+  <meta property="og:description" content="Componentes, quantidades e valores estimados do robô de combate Black Widow.">
+  <meta property="og:image" content="img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+  <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="conteudo topo-interno">
+      <a class="marca" href="index.html">
+        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M8 5h16l-8 10z" fill="#C8102E"/>
+          <path d="M8 27h16l-8-10z" fill="#C8102E"/>
+        </svg>
+        <span>Black Widow</span>
+        <span class="marca-sufixo">R3</span>
+      </a>
+
+      <nav aria-label="Navegação principal">
+        <ul class="nav-lista">
+          <li><a href="index.html">Visão geral</a></li>
+          <li><a href="etapas.html">Etapas</a></li>
+          <li><a href="orcamento.html" aria-current="page">Orçamento</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section aria-labelledby="t-orcamento">
+      <div class="conteudo">
+
+        <p class="rotulo">Custos</p>
+        <h1 class="titulo-secao" id="t-orcamento">Orçamento</h1>
+
+        <!-- ====================== DOWNLOAD + AVISO ======================= -->
+        <!-- O botão é um link comum com o atributo download: funciona sem
+             JavaScript, sem servidor e sem CDN. Ele é a garantia de que o
+             conteúdo está sempre acessível, mesmo se o preview falhar. -->
+        <div class="orcamento-topo">
+          <div>
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5em;">Planilha completa</h2>
+            <p>
+              Arquivo original em formato Excel (.xlsx) com os componentes,
+              as quantidades e os valores estimados do projeto. O preview
+              abaixo é gerado a partir deste mesmo arquivo.
+            </p>
+          </div>
+
+          <a class="botao botao--acento botao--grande"
+             href="arquivos/orcamento-black-widow.xlsx"
+             download>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 13.5h12"
+                    fill="none" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Baixar planilha
+          </a>
+        </div>
+
+        <!-- ========================== PREVIEW ============================ -->
+        <p class="rotulo">Pré-visualização</p>
+
+        <!-- Abas: o JS as mostra somente se a planilha tiver mais de uma.
+             A planilha atual tem uma aba só, então ficam ocultas. -->
+        <div class="abas" data-abas hidden></div>
+
+        <!-- Estado: carregando -->
+        <div class="preview-estado" data-preview-carregando hidden>
+          <div class="girando" aria-hidden="true"></div>
+          <p>Lendo a planilha…</p>
+        </div>
+
+        <!-- Estado: aberto via file:// (duplo clique no arquivo).
+             Não é erro de código: o navegador bloqueia a leitura de arquivos
+             locais por política de origem. O download continua funcionando. -->
+        <div class="preview-estado" data-preview-servidor hidden>
+          <h3>O preview precisa de um servidor local</h3>
+          <p>
+            Esta página foi aberta direto do arquivo (<code>file://</code>) e o
+            navegador bloqueia a leitura da planilha nesse modo, por política de
+            segurança. <strong>O botão de download acima continua funcionando
+            normalmente.</strong>
+          </p>
+          <p>
+            Para ver o preview, rode um servidor local nesta pasta e acesse
+            <code>http://localhost:8000/orcamento.html</code>:
+          </p>
+          <code class="bloco-codigo">python -m http.server 8000</code>
+        </div>
+
+        <!-- Estado: erro genérico (404, CDN fora do ar, arquivo corrompido) -->
+        <div class="preview-estado" data-preview-erro hidden>
+          <h3>Não foi possível carregar o preview</h3>
+          <p data-preview-erro-texto></p>
+        </div>
+
+        <!-- A moldura é quem rola na horizontal, nunca o body.
+             tabindex="0" permite rolar a tabela pelo teclado. -->
+        <div class="tabela-moldura" data-tabela-moldura tabindex="0"
+             role="group" aria-label="Pré-visualização da planilha de orçamento" hidden></div>
+
+        <noscript>
+          <p class="preview-estado">
+            O preview da planilha depende de JavaScript. Use o botão
+            <strong>Baixar planilha</strong> acima para abrir o arquivo original.
+          </p>
+        </noscript>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="conteudo rodape-interno">
+      <p><strong>Universidade São Francisco</strong> | Engenharia da Computação</p>
+      <p>Sistemas Autônomos e Robótica · <span data-ano>2026</span></p>
+    </div>
+  </footer>
+
+  <script src="js/comum.js"></script>
+  <script src="js/orcamento.js"></script>
+</body>
+</html>

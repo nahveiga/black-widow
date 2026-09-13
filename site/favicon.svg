@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Black Widow">
+  <rect width="32" height="32" rx="6" fill="#111116"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="5.5" fill="none" stroke="#26262F"/>
+  <!-- Marca da viuva-negra: ampulheta formada por dois triangulos apice a apice -->
+  <path d="M8 5h16l-8 10z" fill="#C8102E"/>
+  <path d="M8 27h16l-8-10z" fill="#C8102E"/>
+</svg>

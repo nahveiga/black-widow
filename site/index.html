@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<!-- A classe "sem-js" é removida pelo js/comum.js. Enquanto ela existir, o
+     CSS mantém todo o conteúdo visível: se o JavaScript falhar ou estiver
+     desligado, nada some da página (progressive enhancement). -->
+<html lang="pt-BR" class="sem-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Black Widow — Robô de Combate | Sistemas Autônomos e Robótica</title>
+  <meta name="description" content="Robô de combate Black Widow: projeto acadêmico de Sistemas Autônomos e Robótica da Engenharia da Computação da Universidade São Francisco. Chassi de três rodas, controle por ESP32 e rampa frontal.">
+  <meta name="author" content="Letícia Campos, Marcella Neves, Nathalia Veiga, Thales Conceição">
+  <meta name="theme-color" content="#08080B">
+
+  <!-- Open Graph / Twitter: usados por WhatsApp, Teams, LinkedIn etc.
+       Os caminhos são relativos para o site funcionar em qualquer pasta.
+       Ao publicar, troque por URLs absolutas (ver README) - alguns
+       validadores exigem URL completa na og:image. -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Black Widow — Robô de Combate">
+  <meta property="og:description" content="Projeto acadêmico de robô de combate: chassi de três rodas, controle por ESP32 e rampa frontal. Engenharia da Computação — Universidade São Francisco.">
+  <meta property="og:image" content="img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Prancha de concepção do robô de combate Black Widow.">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon: SVG para telas modernas, ICO como garantia, PNG para iOS -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <!-- Fontes: preconnect abre a conexão antes do CSS pedir os arquivos,
+       e display=swap evita texto invisível enquanto a fonte baixa. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+
+  <link rel="stylesheet" href="css/estilo.css">
+
+  <!-- Import map do modo 3D do hero.
+       js/r3-model.js é um módulo ES que monta o robô por código (geometria
+       procedural, sem arquivo de modelo) e importa "three" por nome. O import
+       map traduz esse nome para a URL do CDN. Precisa estar declarado ANTES
+       de qualquer módulo carregar - por isso fica aqui no <head>.
+
+       Só é usado se o modo 3D entrar em ação; quando o hero cai no parallax,
+       nada disto é baixado. Versão fixada de propósito: "latest" quebraria o
+       site sozinho no dia em que a API do three.js mudasse. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
+      "r3-model": "./js/r3-model.js"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- ============================ NAVEGAÇÃO ============================ -->
+  <header class="topo">
+    <div class="conteudo topo-interno">
+      <a class="marca" href="index.html">
+        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M8 5h16l-8 10z" fill="#C8102E"/>
+          <path d="M8 27h16l-8-10z" fill="#C8102E"/>
+        </svg>
+        <span>Black Widow</span>
+        <span class="marca-sufixo">R3</span>
+      </a>
+
+      <nav aria-label="Navegação principal">
+        <ul class="nav-lista">
+          <!-- aria-current marca a página ativa para leitores de tela; o CSS
+               usa o mesmo atributo para o destaque visual. -->
+          <li><a href="index.html" aria-current="page">Visão geral</a></li>
+          <li><a href="etapas.html">Etapas</a></li>
+          <li><a href="orcamento.html">Orçamento</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+
+    <!-- ============================== HERO ============================== -->
+    <!-- data-hero é o gancho do js/hero.js. O script decide sozinho entre
+         sequência de frames, modelo 3D ou parallax, conforme os arquivos
+         presentes na pasta. Nada aqui precisa mudar para trocar de modo. -->
+    <section class="hero" data-hero aria-labelledby="titulo-principal">
+
+      <span class="hero-selo" data-hero-selo aria-hidden="true">HERO <b>—</b></span>
+
+      <div class="hero-palco">
+        <div class="hero-grade">
+
+          <div class="hero-texto">
+            <p class="rotulo">Sistemas Autônomos e Robótica</p>
+
+            <h1 id="titulo-principal">
+              Black Widow
+              <span class="linha-2"><span class="traco">—</span> Robô de combate</span>
+            </h1>
+
+            <p class="hero-chamada">
+              Robô móvel de três rodas com tração diferencial, controle por ESP32
+              e rampa frontal para deslocar o adversário. Projeto da Engenharia
+              da Computação da Universidade São Francisco.
+            </p>
+
+            <div class="hero-acoes">
+              <a class="botao botao--acento" href="#resumo">Ver o projeto</a>
+              <a class="botao" href="etapas.html">Andamento</a>
+            </div>
+          </div>
+
+          <!-- Área da arte. A ordem importa: o glow fica atrás, o canvas e a
+               imagem no meio, as retículas de HUD por cima. -->
+          <div class="hero-midia" data-hero-midia>
+            <span class="hero-glow" aria-hidden="true"></span>
+
+            <!-- Usado pelos modos "frames" e "3d". Começa oculto. -->
+            <canvas data-hero-canvas hidden aria-hidden="true"></canvas>
+
+            <!-- Imagem base: usada pelo modo estático e pelo parallax.
+                 PARA TROCAR A IMAGEM DO HERO, mude só este <picture>. -->
+            <picture>
+              <source srcset="img/prototipo.webp" type="image/webp">
+              <img src="img/prototipo.jpg"
+                   alt="Prancha de concepção do robô, identificada como R3, com vistas superior, frontal e lateral, esquema da distribuição interna dos componentes e lista de características."
+                   width="1402" height="1122"
+                   fetchpriority="high"
+                   data-hero-img>
+            </picture>
+
+            <span class="hero-reticula" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+
+            <!-- Barra de progresso do pré-carregamento (modo frames / 3D).
+                 Sem preload, um scroll rápido pediria frames que ainda não
+                 chegaram e a tela piscaria. -->
+            <div class="hero-carregando" data-hero-carregando hidden>
+              <div class="hero-carregando-trilha">
+                <div class="hero-carregando-barra" data-hero-barra></div>
+              </div>
+              <p class="hero-carregando-texto" data-hero-barra-texto>Carregando sequência</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <span class="hero-scroll" data-hero-scroll aria-hidden="true">Role</span>
+    </section>
+
+    <!-- ============================= RESUMO ============================= -->
+    <section id="resumo" aria-labelledby="t-resumo">
+      <div class="conteudo">
+        <p class="rotulo">Resumo do projeto</p>
+        <h2 class="titulo-secao" id="t-resumo">O que é o Black Widow</h2>
+
+        <div class="resumo-grade">
+          <div class="resumo-texto">
+            <p>
+              Este projeto tem como objetivo o desenvolvimento de um robô de combate
+              para a disciplina de Sistemas Autônomos e Robótica. A proposta consiste
+              na construção de um robô móvel de três rodas, sendo duas traseiras
+              responsáveis pela movimentação e acionadas individualmente por motores
+              elétricos, enquanto a roda dianteira terá a função de apoio e não
+              possuirá acionamento próprio. Dessa forma, o robô poderá realizar
+              movimentos de avanço, recuo e mudanças de direção por meio do controle
+              independente dos motores traseiros.
+            </p>
+            <p>
+              Como elemento de combate, será desenvolvida na parte frontal do robô
+              uma estrutura em formato de rampa, que terá como principal função
+              atingir e deslocar o robô adversário durante as disputas. A estrutura
+              será projetada considerando aspectos de resistência, estabilidade e
+              distribuição de peso, buscando proporcionar maior eficiência durante a
+              movimentação e o contato com o adversário.
+            </p>
+          </div>
+          <div class="resumo-texto">
+            <p>
+              Para o sistema eletrônico, pretende-se utilizar um microcontrolador
+              ESP32 como unidade principal de controle, responsável pelo
+              processamento dos comandos e pelo acionamento dos motores. O sistema
+              constará também com uma ponte H para controlar o sentido de rotação e a
+              velocidade dos motores, utilizando sinais PWM fornecidos pelo ESP32.
+              Além desses componentes, serão utilizados motores de corrente contínua,
+              bateria e componentes necessários para as conexões elétricas e o
+              funcionamento do robô.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== ESPECIFICAÇÕES ========================== -->
+    <section id="especificacoes" aria-labelledby="t-especs">
+      <div class="conteudo">
+        <p class="rotulo">Ficha técnica</p>
+        <h2 class="titulo-secao" id="t-especs">Especificações</h2>
+
+        <!-- <dl> é a estrutura semântica certa: cada card é um par
+             termo/definição, não um item de lista solto. -->
+        <dl class="especs-grade">
+          <div class="espec">
+            <dt>Controlador</dt>
+            <dd>ESP32</dd>
+          </div>
+          <div class="espec">
+            <dt>Driver dos motores</dt>
+            <dd>Ponte H dupla (L298N)</dd>
+          </div>
+          <div class="espec">
+            <dt>Tração</dt>
+            <dd>Diferencial — 2 motores DC traseiros + roda dianteira livre</dd>
+          </div>
+          <div class="espec">
+            <dt>Controle de velocidade</dt>
+            <dd>PWM</dd>
+          </div>
+          <div class="espec">
+            <dt>Comunicação</dt>
+            <dd>Wi-Fi em modo Access Point — interface web</dd>
+          </div>
+          <div class="espec">
+            <dt>Arma</dt>
+            <dd>Rampa frontal</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============================ GALERIA ============================= -->
+    <section id="galeria" aria-labelledby="t-galeria">
+      <div class="conteudo">
+        <p class="rotulo">Registro</p>
+        <h2 class="titulo-secao" id="t-galeria">Galeria</h2>
+
+        <div class="galeria-grade">
+
+          <figure class="galeria-item">
+            <!-- O gatilho do lightbox é um <button>: clicável por teclado e
+                 anunciado como botão, ao contrário de uma <div> com onclick. -->
+            <button type="button" class="galeria-botao"
+                    data-lightbox-abrir
+                    data-src="img/prototipo.jpg"
+                    data-alt="Prancha de concepção do robô R3 com vistas técnicas e distribuição interna dos componentes."
+                    data-legenda="Prancha de concepção — vistas técnicas e distribuição interna">
+              <picture>
+                <source srcset="img/prototipo.webp" type="image/webp">
+                <img src="img/prototipo.jpg"
+                     alt="Prancha de concepção do robô R3 reunindo vista superior, frontal e lateral, o esquema de distribuição interna dos componentes e a lista de características."
+                     width="1402" height="1122" loading="lazy" decoding="async">
+              </picture>
+            </button>
+            <figcaption>
+              <strong>Concepção</strong>
+              Prancha de estudo do robô com vistas superior, frontal e lateral,
+              distribuição interna dos componentes e cotas gerais.
+              Clique para ampliar e ler as anotações.
+            </figcaption>
+          </figure>
+
+          <figure class="galeria-item">
+            <button type="button" class="galeria-botao"
+                    data-lightbox-abrir
+                    data-src="img/robo-montado.jpg"
+                    data-alt="Chassi de acrílico do robô montado, segurado na mão, com rodas amarelas, motores e a eletrônica de controle em protoboard."
+                    data-legenda="Montagem atual — chassi, rodas e eletrônica em protoboard">
+              <picture>
+                <source srcset="img/robo-montado.webp" type="image/webp">
+                <img src="img/robo-montado.jpg"
+                     alt="Chassi de acrílico transparente do robô segurado na mão, com rodas amarelas e pretas, motores fixados e a eletrônica de controle montada em protoboard com diversos jumpers."
+                     width="1200" height="1600" loading="lazy" decoding="async">
+              </picture>
+            </button>
+            <figcaption>
+              <strong>Montagem</strong>
+              Chassi com as rodas e os motores instalados e a eletrônica de
+              controle em protoboard — estágio atual do projeto.
+            </figcaption>
+          </figure>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= VÍDEO ============================== -->
+    <section id="video" aria-labelledby="t-video">
+      <div class="conteudo">
+        <p class="rotulo">Ensaio</p>
+        <h2 class="titulo-secao" id="t-video">Funcionamento</h2>
+
+        <div class="video-bloco">
+          <!-- O arquivo foi gravado em retrato (478x850). A moldura segue a
+               mesma proporção 9:16 para não sobrar tarja preta no player.
+               preload="metadata" baixa só o cabeçalho: o vídeo inteiro
+               (3,4 MB) só desce se a pessoa der play. Sem autoplay. -->
+          <div class="video-moldura">
+            <video controls preload="metadata" playsinline
+                   poster="img/poster-video.jpg"
+                   width="478" height="850">
+              <source src="videos/funcionamento.mp4" type="video/mp4">
+              <p>
+                Seu navegador não reproduz vídeo HTML5.
+                <a href="videos/funcionamento.mp4">Baixe o vídeo do funcionamento</a>.
+              </p>
+            </video>
+          </div>
+
+          <div class="video-info">
+            <p>
+              Registro do acionamento dos motores traseiros a partir da
+              eletrônica de controle montada em protoboard. O teste verifica o
+              sentido de rotação e a resposta de cada motor de forma
+              independente — base para o controle diferencial do robô.
+            </p>
+            <ul class="video-dados">
+              <li><span>Duração</span> <b>17 s</b></li>
+              <li><span>Formato</span> <b>MP4 · 478×850</b></li>
+              <li><span>Etapa</span> <b>Eletrônica de controle</b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================== INTEGRANTES =========================== -->
+    <section id="integrantes" aria-labelledby="t-integrantes">
+      <div class="conteudo">
+        <p class="rotulo">Equipe</p>
+        <h2 class="titulo-secao" id="t-integrantes">Integrantes do grupo</h2>
+
+        <ul class="equipe-grade">
+          <li class="integrante">
+            <p class="integrante-nome">Letícia Pereira de Araújo Campos</p>
+            <p class="integrante-ra">RA 202307384</p>
+          </li>
+          <li class="integrante">
+            <p class="integrante-nome">Marcella Ramalho Simões Salles Neves</p>
+            <p class="integrante-ra">RA 202303851</p>
+            <!-- O cargo é texto, não só uma cor: quem não distingue o
+                 vermelho continua lendo "Capitã". -->
+            <span class="integrante-cargo">Capitã</span>
+          </li>
+          <li class="integrante">
+            <p class="integrante-nome">Nathalia Lima Veiga</p>
+            <p class="integrante-ra">RA 202329537</p>
+          </li>
+          <li class="integrante">
+            <p class="integrante-nome">Thales de Campos Conceição</p>
+            <p class="integrante-ra">RA 202331038</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================= RODAPÉ ============================== -->
+  <footer class="rodape">
+    <div class="conteudo rodape-interno">
+      <p><strong>Universidade São Francisco</strong> | Engenharia da Computação</p>
+      <p>Sistemas Autônomos e Robótica · <span data-ano>2026</span></p>
+    </div>
+  </footer>
+
+  <!-- ============================ LIGHTBOX ============================= -->
+  <!-- <dialog> nativo: o navegador já cuida da camada por cima, do foco
+       preso dentro do modal e do fechamento com Esc. -->
+  <dialog class="lightbox" data-lightbox aria-label="Imagem ampliada">
+    <div class="lightbox-interno">
+      <button type="button" class="lightbox-fechar" data-lightbox-fechar
+              aria-label="Fechar imagem ampliada">&times;</button>
+      <div>
+        <img data-lightbox-img alt="">
+        <p class="lightbox-legenda" data-lightbox-legenda></p>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="js/comum.js"></script>
+  <script src="js/hero.js"></script>
+</body>
+</html>

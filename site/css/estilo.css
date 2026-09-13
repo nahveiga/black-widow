@@ -1,0 +1,1340 @@
+/* =========================================================================
+   BLACK WIDOW - folha de estilo unica
+   Projeto academico / Sistemas Autonomos e Robotica - Eng. da Computacao USF
+
+   Organizacao do arquivo:
+     01. Tokens (variaveis de cor, tipografia, espacamento)
+     02. Reset e base
+     03. Textura de fundo
+     04. Utilitarios de texto (rotulos estilo HUD)
+     05. Navegacao
+     06. Hero (3 modos: frames / 3D / fallback)
+     07. Secoes, cards e especificacoes
+     08. Galeria e lightbox
+     09. Video
+     10. Integrantes
+     11. Timeline (pagina Etapas)
+     12. Orcamento
+     13. Rodape
+     14. Responsivo
+     15. Movimento reduzido
+   ========================================================================= */
+
+/* ============================ 01. TOKENS ================================ */
+:root {
+  /* Paleta definida para o projeto. Os contrastes abaixo foram conferidos
+     com a formula WCAG 2.1 para garantir AA (4.5:1) em texto pequeno. */
+  --fundo: #08080B;          /* fundo profundo */
+  --superficie: #111116;     /* cards e barras */
+  --superficie-alta: #16161C;/* hover / camada acima do card */
+  --borda: #26262F;
+  --texto: #EAEAF2;
+  --texto-sec: #8A8A99;      /* 5.88:1 sobre --fundo | 5.54:1 sobre --superficie */
+  --acento: #C8102E;         /* vermelho da viuva-negra */
+
+  /* O vermelho da marca rende apenas 3.40:1 sobre o fundo escuro: serve para
+     bordas, preenchimentos e titulos grandes, mas REPROVA em AA para texto
+     pequeno. Para textos curtos em vermelho usamos a versao clara (6.19:1). */
+  --acento-texto: #FF4D64;
+  --sucesso: #26C281;        /* etapas concluidas - 8.68:1 sobre o fundo */
+  --alerta: #E8A33D;         /* etapas em andamento (apoio ao vermelho) */
+
+  /* Tipografia: display condensada e pesada nos titulos, sans legivel no
+     corpo, mono nos rotulos de telemetria. Fallbacks de sistema em todas. */
+  --fonte-display: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --fonte-corpo: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --fonte-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+
+  /* Espacamento e medidas */
+  --max-largura: 1180px;
+  --gutter: 24px;
+  --raio: 3px;               /* cantos quase retos: linguagem industrial */
+
+  --transicao: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================== 02. RESET E BASE ============================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  /* scroll-behavior fica no <html> so quando o usuario aceita movimento
+     (ver secao 15) para nao atropelar prefers-reduced-motion. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--fundo);
+  color: var(--texto);
+  font-family: var(--fonte-corpo);
+  font-size: 16px;
+  line-height: 1.65;
+  /* Evita que qualquer elemento com translate/scale gere barra horizontal */
+  overflow-x: hidden;
+}
+
+img, video, canvas { display: block; max-width: 100%; }
+img, video { height: auto; }
+
+/* A regra acima (display:block) é mais específica que o [hidden] do
+   navegador e venceria dela. Como o JS do hero liga/desliga o canvas e a
+   imagem justamente pelo atributo hidden, reforçamos aqui com !important -
+   sem isto, el.hidden = true não esconderia nada. */
+[hidden] { display: none !important; }
+
+h1, h2, h3, h4 {
+  font-family: var(--fonte-display);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.5em;
+  text-transform: uppercase;
+}
+
+p { margin: 0 0 1.15em; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--acento-texto); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Foco visivel e consistente: navegacao por teclado precisa ser obvia */
+:focus-visible {
+  outline: 2px solid var(--acento-texto);
+  outline-offset: 3px;
+}
+
+/* Atalho "pular para o conteudo" - visivel somente com foco */
+.pular-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: var(--acento);
+  color: #fff;
+  padding: 12px 20px;
+  font-family: var(--fonte-mono);
+  font-size: 13px;
+}
+.pular-link:focus {
+  left: 12px;
+  top: 12px;
+}
+
+.conteudo {
+  width: 100%;
+  max-width: var(--max-largura);
+  margin-inline: auto;
+  /* Padding lateral aplicado num unico lugar: garante respiro em 360px */
+  padding-inline: var(--gutter);
+}
+
+/* ======================= 03. TEXTURA DE FUNDO =========================== */
+/* Grid tecnico fixo atras de tudo. Opacidade baixissima: deve ser percebido
+   como textura, nao como desenho. Pseudo-elemento no body para nao exigir
+   uma <div> extra no HTML de cada pagina. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(234, 234, 242, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(234, 234, 242, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Vinheta radial: escurece as beiradas e concentra a atencao no centro */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(8, 8, 11, 0.85) 100%);
+}
+
+/* ====================== 04. UTILITARIOS DE TEXTO ======================== */
+/* Rotulo curto em mono com tracking largo - vocabulario de painel/telemetria */
+.rotulo {
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+/* Tracinho vermelho antes do rotulo: o acento aparece em dose pequena */
+.rotulo::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  background: var(--acento);
+  flex: none;
+}
+
+.titulo-secao {
+  font-size: clamp(1.75rem, 4.5vw, 2.6rem);
+  margin-bottom: 0.6em;
+}
+
+.texto-sec { color: var(--texto-sec); }
+
+/* Classe de apoio para leitores de tela */
+.apenas-leitor {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+section { padding-block: clamp(56px, 9vw, 104px); }
+
+/* ========================== 05. NAVEGACAO =============================== */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8, 8, 11, 0.82);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--borda);
+}
+
+.topo-interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 62px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--fonte-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto);
+}
+.marca:hover { text-decoration: none; color: var(--texto); }
+.marca svg { width: 26px; height: 26px; flex: none; }
+.marca .marca-sufixo {
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: var(--texto-sec);
+  border-left: 1px solid var(--borda);
+  padding-left: 11px;
+}
+
+.nav-lista {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-lista a {
+  display: block;
+  padding: 9px 14px;
+  font-family: var(--fonte-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  border: 1px solid transparent;
+  border-radius: var(--raio);
+  transition: color var(--transicao), border-color var(--transicao), background var(--transicao);
+}
+.nav-lista a:hover {
+  color: var(--texto);
+  background: var(--superficie);
+  border-color: var(--borda);
+  text-decoration: none;
+}
+
+/* Pagina ativa: marcada por COR + FUNDO + barra superior vermelha, e
+   aria-current no HTML para quem usa leitor de tela. */
+.nav-lista a[aria-current="page"] {
+  color: var(--texto);
+  background: var(--superficie);
+  border-color: var(--borda);
+  position: relative;
+}
+.nav-lista a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 2px;
+  background: var(--acento);
+}
+
+/* ============================= 06. HERO ================================= */
+/* Estrutura comum aos tres modos:
+     .hero              -> reserva a altura de scroll
+     .hero-palco        -> sticky, ocupa a viewport e ancora a arte
+     .hero-midia        -> canvas (frames), canvas 3D, ou <picture> (fallback)
+     .hero-texto        -> titulo e chamada, sempre por cima  */
+.hero {
+  position: relative;
+  /* Altura padrao do modo fallback: uma tela. Os modos com rotacao
+     controlada pelo scroll aumentam isso via .hero--scrollavel. */
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--borda);
+
+  /* "clip" e não "hidden": overflow:hidden transformaria o .hero em um
+     contêiner de rolagem, e aí o .hero-palco com position:sticky passaria a
+     grudar em relação a ELE (que nunca rola) em vez da viewport - o robô
+     sumiria da tela ao rolar. overflow:clip recorta o glow que transborda
+     sem criar contêiner de rolagem, então o sticky continua funcionando. */
+  overflow: clip;
+}
+
+/* Nos modos frames/3D o hero precisa de "trilho" de scroll: a arte fica
+   sticky e a rotacao acompanha a distancia rolada dentro desta altura. */
+.hero--scrollavel {
+  min-height: 260vh;
+  display: block;
+  align-items: initial;
+}
+.hero--scrollavel .hero-palco {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-palco {
+  position: relative;
+  width: 100%;
+}
+
+.hero-grade {
+  width: 100%;
+  max-width: var(--max-largura);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 64px);
+}
+
+.hero-texto { position: relative; z-index: 3; }
+
+.hero h1 {
+  /* clamp deixa o titulo grande no desktop sem estourar em 360px */
+  font-size: clamp(2.6rem, 9vw, 5.4rem);
+  line-height: 0.94;
+  margin-bottom: 0.35em;
+  letter-spacing: -0.005em;
+}
+.hero h1 .linha-2 {
+  display: block;
+  font-size: 0.42em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--texto-sec);
+  margin-top: 0.5em;
+}
+/* O "—" entre as duas linhas do titulo em vermelho: acento pontual */
+.hero h1 .traco { color: var(--acento); }
+
+.hero-chamada {
+  color: var(--texto-sec);
+  font-size: clamp(0.95rem, 2.2vw, 1.08rem);
+  max-width: 46ch;
+  margin-bottom: 28px;
+}
+
+.hero-acoes { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* --- Area da arte --- */
+.hero-midia {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  /* aspect-ratio + max-width evita salto de layout durante o carregamento.
+     4/3 acompanha a proporção da prancha de concepção (1402x1122): num
+     quadrado ela apareceria pequena demais no meio de duas faixas vazias. */
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  max-width: 620px;
+  margin-inline: auto;
+}
+
+/* O <picture> é inline por padrão e não repassaria a altura ao <img>;
+   por isso ele precisa virar um bloco que preenche a área da arte. */
+.hero-midia picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-midia canvas,
+.hero-midia img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* will-change avisa o compositor: transform da imagem roda na GPU */
+  will-change: transform;
+}
+
+/* Glow vermelho pulsante atras do robo. Fica atras via z-index negativo
+   dentro do proprio .hero-midia. */
+/* O glow tem de ser MAIOR que a área da arte para transbordar por fora
+   dela. A imagem do hero é uma prancha opaca que preenche a caixa toda:
+   um glow menor ficaria escondido atrás e não apareceria na tela.
+   Sem aspect-ratio, ele acompanha a proporção da caixa (elipse), abraçando
+   a prancha em vez de virar um círculo desalinhado. */
+.hero-glow {
+  position: absolute;
+  z-index: -1;
+  width: 120%;
+  height: 120%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+              rgba(200, 16, 46, 0.50) 0%,
+              rgba(200, 16, 46, 0.16) 45%,
+              transparent 72%);
+  filter: blur(34px);
+  animation: pulsar-glow 4.5s ease-in-out infinite;
+}
+/* No modo 3D o robô é um objeto flutuando no centro da caixa, e não uma
+   prancha que ocupa tudo: o halo precisa ser menor e mais concentrado,
+   senão vira uma mancha vermelha maior que o próprio robô. */
+.hero--3d .hero-glow {
+  width: 68%;
+  height: 68%;
+  filter: blur(30px);
+}
+
+@keyframes pulsar-glow {
+  0%, 100% { transform: scale(1);    opacity: 0.75; }
+  50%      { transform: scale(1.13); opacity: 1; }
+}
+
+/* Reticulas de HUD nos cantos da arte: reforca a referencia de telemetria */
+/* inset negativo: as retículas ficam um pouco FORA da arte, emoldurando-a.
+   Sobre a prancha (que já é escura e cheia de detalhe) elas sumiam;
+   por fora, contra o fundo liso, leem-se como marcação de HUD. */
+.hero-reticula {
+  position: absolute;
+  inset: -10px;
+  z-index: 4;
+  pointer-events: none;
+}
+.hero-reticula span {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--acento);
+  opacity: 0.8;
+}
+.hero-reticula span:nth-child(1) { top: 0;    left: 0;    border-right: 0; border-bottom: 0; }
+.hero-reticula span:nth-child(2) { top: 0;    right: 0;   border-left: 0;  border-bottom: 0; }
+.hero-reticula span:nth-child(3) { bottom: 0; left: 0;    border-right: 0; border-top: 0; }
+.hero-reticula span:nth-child(4) { bottom: 0; right: 0;   border-left: 0;  border-top: 0; }
+
+/* --- Barra de progresso do pre-carregamento (modo frames) --- */
+.hero-carregando {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(260px, 70%);
+  text-align: center;
+}
+.hero-carregando[hidden] { display: none !important; }
+.hero-carregando-trilha {
+  height: 3px;
+  background: var(--borda);
+  overflow: hidden;
+}
+.hero-carregando-barra {
+  height: 100%;
+  width: 0%;
+  background: var(--acento);
+  transition: width 120ms linear;
+}
+.hero-carregando-texto {
+  margin-top: 10px;
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+
+/* --- Indicador de scroll --- */
+.hero-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 5;
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.hero-scroll::after {
+  content: "";
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(to bottom, var(--acento), transparent);
+  animation: descer 2s ease-in-out infinite;
+}
+@keyframes descer {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.6); transform-origin: top; }
+  50%      { opacity: 1;   transform: scaleY(1);   transform-origin: top; }
+}
+
+/* Selo de telemetria: mostra o modo do hero ativo (frames/3D/estatico) */
+.hero-selo {
+  position: absolute;
+  top: 18px;
+  right: var(--gutter);
+  z-index: 5;
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  border: 1px solid var(--borda);
+  background: rgba(17, 17, 22, 0.7);
+  padding: 5px 10px;
+}
+.hero-selo b { color: var(--acento-texto); font-weight: 500; }
+
+/* ============================ BOTOES ==================================== */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  font-family: var(--fonte-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  color: var(--texto);
+  cursor: pointer;
+  transition: background var(--transicao), border-color var(--transicao), transform var(--transicao);
+}
+.botao:hover {
+  background: var(--superficie-alta);
+  border-color: var(--texto-sec);
+  text-decoration: none;
+  color: var(--texto);
+}
+.botao:active { transform: translateY(1px); }
+
+.botao--acento {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: #FFFFFF;
+}
+.botao--acento:hover {
+  background: #E11336;
+  border-color: #E11336;
+  color: #FFFFFF;
+}
+
+.botao--grande { padding: 18px 30px; font-size: 13px; }
+
+/* =============== 07. SECOES, CARDS E ESPECIFICACOES ===================== */
+.resumo-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+}
+.resumo-texto p { max-width: 62ch; }
+
+/* Card base com "cantos de HUD" desenhados em gradiente - sem markup extra */
+.card {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 24px;
+  transition: border-color var(--transicao), background var(--transicao);
+}
+.card:hover { border-color: #33333F; }
+
+.especs-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.espec {
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 22px 22px 22px 24px;
+  overflow: hidden;
+}
+/* Faixa vermelha fina na lateral - marca o card sem inundar de vermelho */
+.espec::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--acento);
+  opacity: 0.75;
+}
+.espec dt {
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  margin-bottom: 9px;
+}
+.espec dd {
+  margin: 0;
+  font-family: var(--fonte-display);
+  font-size: 1.22rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+/* ======================= 08. GALERIA E LIGHTBOX ========================= */
+.galeria-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 20px;
+}
+
+.galeria-item {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  overflow: hidden;
+}
+
+.galeria-botao {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  line-height: 0;
+}
+.galeria-botao img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity var(--transicao);
+}
+.galeria-botao:hover img { transform: scale(1.04); opacity: 0.9; }
+
+.galeria-item figcaption {
+  padding: 14px 18px;
+  border-top: 1px solid var(--borda);
+  font-size: 0.875rem;
+  color: var(--texto-sec);
+  line-height: 1.5;
+}
+.galeria-item figcaption strong {
+  display: block;
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texto);
+  margin-bottom: 4px;
+}
+
+/* Lightbox: <dialog> nativo cuida de foco, Esc e camada por cima */
+.lightbox {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  max-width: 100vw;
+  max-height: 100vh;
+  width: 100%;
+  height: 100%;
+}
+.lightbox::backdrop { background: rgba(8, 8, 11, 0.94); }
+.lightbox-interno {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: clamp(16px, 4vw, 48px);
+}
+.lightbox img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  border: 1px solid var(--borda);
+}
+.lightbox-legenda {
+  margin-top: 16px;
+  text-align: center;
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+.lightbox-fechar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  line-height: 1;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.lightbox-fechar:hover { background: var(--superficie-alta); }
+
+/* ============================= 09. VIDEO ================================ */
+/* O video do robo foi gravado em retrato (478x850). Por isso a moldura e
+   estreita e centralizada: um player 16/9 deixaria tarjas enormes. */
+.video-bloco {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: center;
+}
+.video-moldura {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  /* Mesmo tom do fundo do site (e das tarjas do poster, geradas nessa cor):
+     assim as tarjas do poster somem na moldura em vez de virarem um
+     retângulo mais claro. Durante a reprodução o vídeo preenche tudo. */
+  background: var(--fundo);
+  overflow: hidden;
+  /* 9/16 casa com a proporcao real do arquivo */
+  aspect-ratio: 9 / 16;
+  max-height: 74svh;
+}
+.video-moldura video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--fundo);
+}
+.video-info p { max-width: 52ch; }
+.video-dados {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+.video-dados li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px dashed var(--borda);
+  padding-bottom: 9px;
+}
+.video-dados b { color: var(--texto); font-weight: 500; }
+
+/* ========================= 10. INTEGRANTES ============================== */
+.equipe-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.integrante {
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 22px;
+}
+.integrante-nome {
+  font-family: var(--fonte-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.integrante-ra {
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--texto-sec);
+}
+/* Distintivo de capita: vermelho + texto, nunca so cor */
+.integrante-cargo {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 10px;
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--acento-texto);
+  border: 1px solid rgba(200, 16, 46, 0.5);
+  background: rgba(200, 16, 46, 0.1);
+  border-radius: var(--raio);
+}
+
+/* ====================== 11. TIMELINE (ETAPAS) =========================== */
+.progresso-painel {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: clamp(20px, 3vw, 30px);
+  margin-bottom: clamp(40px, 6vw, 64px);
+}
+.progresso-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.progresso-titulo {
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+.progresso-valor {
+  font-family: var(--fonte-display);
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1;
+}
+.progresso-valor span { font-size: 0.45em; color: var(--texto-sec); }
+
+.progresso-trilha {
+  height: 8px;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progresso-barra {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--sucesso), #1BA96B);
+  transition: width 900ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Contadores por status */
+.progresso-resumo {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin: 20px 0 0;
+  padding: 0;
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+.progresso-resumo li { display: flex; align-items: center; gap: 8px; }
+.progresso-resumo b { color: var(--texto); font-weight: 500; }
+.progresso-resumo .ponto {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex: none;
+}
+.progresso-resumo .ponto--concluido { background: var(--sucesso); }
+.progresso-resumo .ponto--andamento { background: var(--acento); }
+.progresso-resumo .ponto--pendente  { background: var(--texto-sec); }
+
+/* --- A linha do tempo --- */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+/* Linha vertical que conecta os marcadores */
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: var(--borda);
+}
+
+.etapa {
+  position: relative;
+  padding-left: 54px;
+  padding-bottom: 26px;
+  /* Estado inicial da animacao de entrada (IntersectionObserver adiciona
+     .visivel). Sem JS o item continua legivel: ver .sem-js abaixo. */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 520ms ease, transform 520ms ease;
+}
+.etapa.visivel { opacity: 1; transform: none; }
+.etapa:last-child { padding-bottom: 0; }
+
+/* Marcador: circulo com ICONE dentro. O icone (v, bolinha cheia, bolinha
+   vazia) diferencia os estados sem depender de cor. */
+.etapa-marcador {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  font-size: 14px;
+  line-height: 1;
+  flex: none;
+}
+
+.etapa-corpo {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 18px 20px;
+}
+
+.etapa-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 6px;
+}
+.etapa-numero {
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--texto-sec);
+}
+.etapa-titulo {
+  font-family: var(--fonte-display);
+  font-size: 1.12rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.25;
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Rotulo textual do status - o terceiro canal de informacao, junto de
+   cor e icone. Obrigatorio para acessibilidade (daltonismo). */
+.etapa-status {
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: var(--raio);
+  border: 1px solid;
+  white-space: nowrap;
+}
+.etapa-nota {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  color: var(--texto-sec);
+}
+
+/* -- Estado CONCLUIDO: verde, icone v, titulo riscado, opacidade menor -- */
+.etapa--concluido { opacity: 0; }            /* base da animacao */
+.etapa--concluido.visivel { opacity: 0.72; } /* ja feito: recua visualmente */
+.etapa--concluido .etapa-marcador {
+  border-color: var(--sucesso);
+  color: var(--sucesso);
+  background: rgba(38, 194, 129, 0.1);
+}
+.etapa--concluido .etapa-titulo {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--texto-sec);
+}
+.etapa--concluido .etapa-status {
+  color: var(--sucesso);
+  border-color: rgba(38, 194, 129, 0.45);
+  background: rgba(38, 194, 129, 0.1);
+}
+
+/* -- Estado EM ANDAMENTO: destaque maior, pulsando -- */
+.etapa--andamento .etapa-marcador {
+  border-color: var(--acento);
+  color: var(--acento-texto);
+  background: rgba(200, 16, 46, 0.14);
+  animation: pulsar-marcador 2.4s ease-in-out infinite;
+}
+.etapa--andamento .etapa-corpo {
+  border-color: rgba(200, 16, 46, 0.5);
+  background: linear-gradient(180deg, rgba(200, 16, 46, 0.07), transparent 70%), var(--superficie);
+}
+.etapa--andamento .etapa-status {
+  color: var(--acento-texto);
+  border-color: rgba(200, 16, 46, 0.5);
+  background: rgba(200, 16, 46, 0.12);
+}
+@keyframes pulsar-marcador {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.45); }
+  50%      { box-shadow: 0 0 0 7px rgba(200, 16, 46, 0); }
+}
+
+/* -- Estado PENDENTE: cinza, contorno tracejado -- */
+.etapa--pendente .etapa-marcador {
+  border-style: dashed;
+  color: var(--texto-sec);
+}
+.etapa--pendente .etapa-corpo {
+  border-style: dashed;
+  background: transparent;
+}
+.etapa--pendente .etapa-status {
+  color: var(--texto-sec);
+  border-color: var(--borda);
+  border-style: dashed;
+}
+
+/* Sem JavaScript nao existe IntersectionObserver para revelar os itens:
+   a classe .sem-js (removida pelo proprio script) garante conteudo visivel. */
+.sem-js .etapa { opacity: 1 !important; transform: none !important; }
+.sem-js .etapa--concluido { opacity: 0.72 !important; }
+
+/* =========================== 12. ORCAMENTO ============================== */
+.orcamento-topo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: center;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: clamp(22px, 3.5vw, 34px);
+  margin-bottom: 40px;
+}
+.orcamento-topo p { color: var(--texto-sec); max-width: 56ch; margin-bottom: 0; }
+
+/* Abas (aparecem so se a planilha tiver mais de uma aba) */
+.abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 2;
+}
+.abas[hidden] { display: none !important; }
+.aba {
+  padding: 10px 18px;
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  background: transparent;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio) var(--raio) 0 0;
+  cursor: pointer;
+}
+.aba:hover { color: var(--texto); background: var(--superficie); }
+.aba[aria-selected="true"] {
+  color: var(--texto);
+  background: var(--superficie);
+  border-bottom-color: var(--superficie);
+}
+.aba[aria-selected="true"]::before {
+  content: "";
+  position: absolute;
+  inset: auto auto 0 0;
+}
+
+/* Moldura da tabela: o scroll horizontal fica AQUI, nunca no body */
+.tabela-moldura {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  overflow: auto;
+  max-height: 70svh;
+  /* Dica de rolagem para teclado/leitores: a moldura recebe tabindex no HTML */
+  overscroll-behavior: contain;
+}
+
+.tabela-planilha {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+.tabela-planilha th,
+.tabela-planilha td {
+  padding: 11px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--borda);
+  border-right: 1px solid var(--borda);
+  white-space: nowrap;
+}
+.tabela-planilha th:last-child,
+.tabela-planilha td:last-child { border-right: 0; }
+
+/* Cabecalho fixo no topo durante o scroll vertical */
+.tabela-planilha thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--superficie-alta);
+  font-family: var(--fonte-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+  /* border-bottom nao acompanha sticky em alguns motores: usamos shadow */
+  box-shadow: inset 0 -1px 0 var(--borda);
+  border-bottom: 0;
+}
+
+.tabela-planilha tbody tr:hover td { background: var(--superficie-alta); }
+.tabela-planilha tbody tr:last-child td { border-bottom: 0; }
+
+/* Linha de total, detectada no JS pelo texto da primeira celula.
+   Precisa cobrir th E td: a primeira coluna e montada como th[scope=row]. */
+.tabela-planilha tbody tr.linha-total th,
+.tabela-planilha tbody tr.linha-total td {
+  font-family: var(--fonte-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--texto);
+  background: rgba(200, 16, 46, 0.09);
+  border-top: 1px solid rgba(200, 16, 46, 0.45);
+}
+
+/* Celulas numericas alinhadas a direita (classe aplicada no JS) */
+.tabela-planilha td.num { text-align: right; font-family: var(--fonte-mono); }
+
+/* Primeira coluna: o JS a monta como <th scope="row"> (nome do item).
+   Sem esta regra ela herdaria o visual de cabeçalho de coluna. */
+.tabela-planilha tbody th[scope="row"] {
+  font-weight: 500;
+  font-family: var(--fonte-corpo);
+  font-size: 0.9rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--texto);
+  background: transparent;
+  position: static;
+  box-shadow: none;
+  border-bottom: 1px solid var(--borda);
+  white-space: normal;   /* nome de componente pode quebrar linha */
+  min-width: 180px;
+}
+
+/* Titulo da planilha (celula mesclada da primeira linha) vira <caption> */
+.tabela-planilha caption.tabela-titulo {
+  caption-side: top;
+  text-align: left;
+  padding: 16px;
+  font-family: var(--fonte-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto);
+  border-bottom: 1px solid var(--borda);
+  background: var(--superficie);
+}
+
+/* Estados do preview: carregando / erro */
+.preview-estado {
+  border: 1px dashed var(--borda);
+  border-radius: var(--raio);
+  padding: clamp(24px, 4vw, 40px);
+  text-align: center;
+  color: var(--texto-sec);
+}
+.preview-estado[hidden] { display: none !important; }
+.preview-estado h3 {
+  font-size: 1.15rem;
+  color: var(--texto);
+  margin-bottom: 0.6em;
+}
+.preview-estado code {
+  font-family: var(--fonte-mono);
+  font-size: 0.85em;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 3px 7px;
+  color: var(--texto);
+  white-space: nowrap;
+}
+.preview-estado .bloco-codigo {
+  display: block;
+  margin: 16px auto 0;
+  padding: 14px 18px;
+  max-width: max-content;
+  text-align: left;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* Spinner do carregamento */
+.girando {
+  width: 26px;
+  height: 26px;
+  margin: 0 auto 16px;
+  border: 2px solid var(--borda);
+  border-top-color: var(--acento);
+  border-radius: 50%;
+  animation: girar 800ms linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ============================= 13. RODAPE =============================== */
+.rodape {
+  border-top: 1px solid var(--borda);
+  padding-block: 40px;
+  margin-top: clamp(40px, 7vw, 90px);
+}
+.rodape-interno {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--fonte-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-sec);
+}
+.rodape-interno strong { color: var(--texto); font-weight: 500; }
+
+/* ========================== 14. RESPONSIVO ============================== */
+@media (max-width: 900px) {
+  .hero-grade {
+    /* Em tela estreita a arte vai para cima do texto */
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  .hero-midia { grid-row: 1; max-width: 380px; }
+  .hero--scrollavel { min-height: 200vh; }
+
+  .resumo-grade,
+  .video-bloco { grid-template-columns: 1fr; }
+  .video-moldura { max-width: 320px; margin-inline: auto; }
+
+  .orcamento-topo { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  :root { --gutter: 18px; }
+
+  /* A navegacao passa a rolar na horizontal em vez de quebrar linha */
+  .topo-interno { flex-wrap: wrap; padding-block: 10px; }
+  .nav-lista {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .nav-lista::-webkit-scrollbar { display: none; }
+  .nav-lista a { padding: 8px 11px; font-size: 11px; }
+
+  .marca .marca-sufixo { display: none; }
+  .hero-selo { display: none; }
+}
+
+@media (max-width: 420px) {
+  :root { --gutter: 14px; }
+  body { font-size: 15px; }
+  .hero h1 { font-size: clamp(2.1rem, 11vw, 2.8rem); }
+  .etapa { padding-left: 46px; }
+  .etapa-marcador { width: 31px; height: 31px; font-size: 12px; }
+  .timeline::before { left: 15px; }
+  .card, .espec, .etapa-corpo, .integrante { padding: 16px; }
+  .botao { padding: 12px 16px; font-size: 11px; }
+}
+
+/* ======================= 15. MOVIMENTO REDUZIDO ========================= */
+/* Scroll suave apenas para quem aceita movimento */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* Respeita a preferencia do sistema: desliga animacoes decorativas e
+   transicoes. O conteudo continua inteiro - so o movimento sai. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .etapa { opacity: 1 !important; transform: none !important; }
+  .etapa--concluido { opacity: 0.72 !important; }
+  .hero-glow { animation: none; opacity: 0.8; }
+  .hero-scroll::after { animation: none; opacity: 0.6; }
+  /* Sem trilho de scroll: o hero volta a ter uma tela de altura */
+  .hero--scrollavel { min-height: 100svh; }
+}

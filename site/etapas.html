@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="sem-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Etapas do projeto | Black Widow — Robô de Combate</title>
+  <meta name="description" content="Linha do tempo do desenvolvimento do robô de combate Black Widow: etapas concluídas, em andamento e pendentes, com a porcentagem de conclusão do projeto.">
+  <meta name="theme-color" content="#08080B">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Etapas do projeto — Black Widow">
+  <meta property="og:description" content="Linha do tempo do robô de combate Black Widow, da definição do conceito à entrega final.">
+  <meta property="og:image" content="img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+  <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="conteudo topo-interno">
+      <a class="marca" href="index.html">
+        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M8 5h16l-8 10z" fill="#C8102E"/>
+          <path d="M8 27h16l-8-10z" fill="#C8102E"/>
+        </svg>
+        <span>Black Widow</span>
+        <span class="marca-sufixo">R3</span>
+      </a>
+
+      <nav aria-label="Navegação principal">
+        <ul class="nav-lista">
+          <li><a href="index.html">Visão geral</a></li>
+          <li><a href="etapas.html" aria-current="page">Etapas</a></li>
+          <li><a href="orcamento.html">Orçamento</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section aria-labelledby="t-etapas">
+      <div class="conteudo">
+
+        <p class="rotulo">Cronograma</p>
+        <h1 class="titulo-secao" id="t-etapas">Etapas do projeto</h1>
+        <p class="texto-sec" style="max-width: 62ch;">
+          Acompanhamento cronológico do desenvolvimento do robô, da definição do
+          conceito até a entrega. Cada etapa indica seu estado por cor, ícone e
+          rótulo de texto.
+        </p>
+
+        <!-- ===================== PAINEL DE PROGRESSO ===================== -->
+        <!-- Todos os números deste painel são calculados pelo js/etapas.js a
+             partir do array de etapas. Os valores abaixo são só o estado
+             inicial mostrado antes do script rodar. -->
+        <div class="progresso-painel">
+          <div class="progresso-cabecalho">
+            <span class="progresso-titulo">Progresso geral do projeto</span>
+            <p class="progresso-valor">
+              <span class="apenas-leitor">Progresso: </span><span data-progresso-valor>0</span><span>%</span>
+            </p>
+          </div>
+
+          <div class="progresso-trilha" data-progresso-trilha>
+            <div class="progresso-barra" data-progresso-barra></div>
+          </div>
+
+          <ul class="progresso-resumo">
+            <li>
+              <span class="ponto ponto--concluido" aria-hidden="true"></span>
+              Concluídas <b data-conta-concluido>0</b>
+            </li>
+            <li>
+              <span class="ponto ponto--andamento" aria-hidden="true"></span>
+              Em andamento <b data-conta-andamento>0</b>
+            </li>
+            <li>
+              <span class="ponto ponto--pendente" aria-hidden="true"></span>
+              Pendentes <b data-conta-pendente>0</b>
+            </li>
+            <li>Total <b data-conta-total>0</b></li>
+          </ul>
+        </div>
+
+        <!-- ======================= LINHA DO TEMPO ======================== -->
+        <!-- A lista é preenchida pelo js/etapas.js. Usamos <ol> porque a
+             ordem das etapas é informação, não só apresentação. -->
+        <ol class="timeline" data-timeline></ol>
+
+        <!-- Se o JavaScript estiver desativado a timeline fica vazia, então
+             avisamos onde os dados estão, em vez de mostrar um buraco. -->
+        <noscript>
+          <p class="preview-estado" style="margin-top: 24px;">
+            Esta página monta a linha do tempo com JavaScript. Com o JavaScript
+            desativado, a lista completa das etapas pode ser lida no arquivo
+            <code>js/dados-etapas.js</code>.
+          </p>
+        </noscript>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="conteudo rodape-interno">
+      <p><strong>Universidade São Francisco</strong> | Engenharia da Computação</p>
+      <p>Sistemas Autônomos e Robótica · <span data-ano>2026</span></p>
+    </div>
+  </footer>
+
+  <!-- dados-etapas.js precisa vir ANTES de etapas.js: é dele que sai o array -->
+  <script src="js/comum.js"></script>
+  <script src="js/dados-etapas.js"></script>
+  <script src="js/etapas.js"></script>
+</body>
+</html>
