@@ -134,6 +134,59 @@ linha do `var pontos` em `js/etapas.js`.
 
 ---
 
+## Como adicionar uma evidência
+
+A seção **Evidências** da home sai inteirinha de **`js/dados-evidencias.js`** —
+incluindo os cards tracejados do que ainda falta registrar. O contador
+("3 de 6 já documentadas") é calculado, não escrito à mão.
+
+### Registrei uma evidência que estava pendente
+
+1. Coloque o arquivo em `img/`, com nome em kebab-case sem acentos.
+2. Gere o `.webp` (comando na seção seguinte).
+3. No item correspondente, troque `status` de `"pendente"` para `"ok"` e
+   preencha os campos da mídia:
+
+```js
+{
+  titulo: "Componentes recebidos",
+  tipo: "foto",
+  etapa: "Mecânica",
+  status: "ok",                          // era "pendente"
+  arquivo: "img/componentes-recebidos.jpg",
+  webp: "img/componentes-recebidos.webp",
+  largura: 1600, altura: 1200,           // dimensões reais, em pixels
+  alt: "Descreva o que aparece na foto.",
+  tarefa: "..."                          // já preenchido
+}
+```
+
+Pronto — o card deixa de ser tracejado, passa a exibir a foto com lightbox e o
+contador se atualiza sozinho.
+
+### Quero acrescentar uma evidência nova
+
+Copie um bloco `{ ... }` inteiro e ajuste. Campos aceitos:
+
+| Campo | Para que serve |
+|---|---|
+| `titulo` | título curto do card |
+| `tarefa` | parágrafo descritivo |
+| `tipo` | `"foto"` ou `"video"` |
+| `etapa` | rótulo da frente de trabalho (`"Mecânica"`, `"Testes"`, …) |
+| `status` | `"ok"` (exibe a mídia) ou `"pendente"` (card tracejado) |
+| `arquivo` | caminho do `.jpg`/`.mp4` — só quando `status: "ok"` |
+| `webp` | versão WebP da foto (opcional, mas recomendada) |
+| `poster` | imagem de capa — só para `tipo: "video"` |
+| `alt` | descrição da imagem para leitor de tela |
+| `largura`/`altura` | dimensões reais em px — evitam o "pulo" do layout |
+| `detalhe` | linha técnica opcional (ex.: duração e formato do vídeo) |
+
+> **`alt` descreve o que se vê; `tarefa` descreve o que o registro significa.**
+> São coisas diferentes: quem usa leitor de tela precisa das duas.
+
+---
+
 ## Como trocar as fotos
 
 1. Coloque o arquivo novo em `img/` com nome em kebab-case sem acentos.
@@ -144,7 +197,10 @@ linha do `var pontos` em `js/etapas.js`.
    python -c "from PIL import Image; im=Image.open('img/foto.jpg').convert('RGB'); im.save('img/foto.webp','WEBP',quality=82,method=6)"
    ```
 
-3. Atualize o `<picture>` correspondente no HTML — são três coisas por imagem:
+3. **Se a foto for uma evidência da home**, não mexa no HTML: edite o item em
+   `js/dados-evidencias.js` (ver a seção anterior). O `<picture>` é montado
+   pelo script. O passo abaixo vale para a **imagem do hero**, que é a única
+   escrita direto no `index.html`:
 
    ```html
    <picture>
@@ -160,8 +216,9 @@ linha do `var pontos` em `js/etapas.js`.
      espaço e evitam que o texto "salte" quando a imagem carrega.
    - **`loading="lazy"`** — em toda imagem **fora** do hero.
 
-4. Na galeria, atualize também os atributos `data-src`, `data-alt` e
-   `data-legenda` do `<button>`, que alimentam o lightbox.
+4. A imagem do hero fica no `<picture>` marcado com o comentário
+   `PARA TROCAR A IMAGEM DO HERO` no `index.html`. Ela é a única sem
+   `loading="lazy"`: está no topo e precisa carregar imediatamente.
 
 ---
 

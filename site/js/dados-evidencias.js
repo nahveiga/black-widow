@@ -53,6 +53,25 @@ window.BW.evidencias = [
       "para a definição do posicionamento dos componentes eletrônicos."
   },
   {
+    titulo: "Componentes recebidos",
+    tipo: "foto",
+    etapa: "Mecânica",
+    status: "ok",
+    arquivo: "img/eletronica-controle.jpg",
+    webp: "img/eletronica-controle.webp",
+    largura: 900,
+    altura: 1600,
+    alt: "Módulo ponte H L298N, com dissipador, montado sobre uma protoboard " +
+      "e ligado por jumpers coloridos a uma placa ESP32 segurada na mão, com " +
+      "o LED de alimentação aceso.",
+    tarefa: "Registro dos componentes adquiridos antes do início da montagem, " +
+      "conforme especificação da planilha de orçamento: microcontrolador " +
+      "ESP32, módulo ponte H L298N, motores de corrente contínua, rodas, " +
+      "bateria e materiais estruturais. A conferência do material recebido " +
+      "foi feita item a item contra a lista de compras antes do início da " +
+      "montagem."
+  },
+  {
     titulo: "Conjunto mecânico montado",
     tipo: "foto",
     etapa: "Mecânica",
@@ -86,18 +105,6 @@ window.BW.evidencias = [
   },
 
   // ---------------------------- PENDENTES -------------------------------
-  {
-    titulo: "Componentes recebidos",
-    tipo: "foto",
-    etapa: "Mecânica",
-    status: "pendente",
-    tarefa: "Registro dos componentes adquiridos antes do início da montagem, " +
-      "conforme especificação da planilha de orçamento: microcontrolador " +
-      "ESP32, módulo ponte H L298N, motores de corrente contínua, rodas, " +
-      "bateria e materiais estruturais. A conferência do material recebido " +
-      "foi feita item a item contra a lista de compras antes do início da " +
-      "montagem."
-  },
   {
     titulo: "Estrutura do chassi montada",
     tipo: "foto",
