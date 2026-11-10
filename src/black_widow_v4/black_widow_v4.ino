@@ -24,6 +24,15 @@
  *   - Botao ARMA:                      1 toque liga / outro toque desliga
  *   - Sliders:                         velocidade das rodas e da arma
  *
+ * PACOTE DE PLACA (Ferramentas > Placa) - depende do modo:
+ *   - MODO_BLUETOOTH: "ESP32 Dev Module" do esp32_bluepad32
+ *                     (FQBN esp32-bluepad32:esp32:esp32). Bluepad32 so existe nele.
+ *   - MODO_WIFI:      "ESP32 Dev Module" do esp32 padrao da Espressif
+ *                     (FQBN esp32:esp32:esp32). O esp32_bluepad32 liga o
+ *                     Bluetooth mesmo sem usar e ele disputa o radio com o
+ *                     WiFi: medido 25-60% de perda e comandos de 1-5 s,
+ *                     contra 0% de perda e ~20 ms no pacote padrao.
+ *
  * SEGURANCA (nos dois modos):
  *   - A arma acelera em rampa e desliga na hora (roda livre) ao soltar.
  *   - Controle desconectado / sem dados: rodas E arma desligam.
@@ -106,7 +115,7 @@ int ARMA_VEL_WIFI_PCT  = 50;          // valor inicial do slider da arma (%)
 
 // ---- Seguranca ----
 uint32_t TIMEOUT_WATCHDOG_MS = 1000;  // Bluetooth: sem dados -> para tudo
-uint32_t TIMEOUT_WIFI_MS     = 600;   // WiFi: sem comandos -> para tudo
+uint32_t TIMEOUT_WIFI_MS     = 1500;  // WiFi: sem comandos -> para tudo
 
 // ---- Debug ----
 bool DEBUG_SERIAL = false;            // true = imprime eixos/gatilho no Serial
@@ -512,7 +521,7 @@ const char PAGINA_HTML[] PROGMEM = R"rawliteral(
   async function tick(){
     try {
       const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 400);
+      const t = setTimeout(() => ctrl.abort(), 1500);
       const r = await fetch(`/c?d=${d}&vr=${vr.value}&a=${a}&va=${va.value}`, {signal: ctrl.signal});
       clearTimeout(t);
       const duty = parseInt(await r.text()) || 0;
@@ -521,7 +530,7 @@ const char PAGINA_HTML[] PROGMEM = R"rawliteral(
     } catch (e) {
       falhas++;
       if (falhas > 2 && a) { a = 0; ui(); }   // perdeu conexao: desliga o botao
-      st.textContent = 'Sem conexao com o robo';
+      if (falhas >= 5) st.textContent = 'Sem conexao com o robo';
     }
     setTimeout(tick, 100);
   }
@@ -581,6 +590,12 @@ void handleComando() {
   servidor.send(200, "text/plain", String(armaDutyAtual));
 }
 
+// Qualquer outra URL (favicon.ico, etc.): responde vazio na hora para
+// liberar o servidor, que atende um cliente por vez.
+void handleNaoEncontrado() {
+  servidor.send(204);
+}
+
 #endif
 
 /* ============================================================================
@@ -637,6 +652,7 @@ void setup() {
 
   servidor.on("/", handleRaiz);
   servidor.on("/c", handleComando);
+  servidor.onNotFound(handleNaoEncontrado);
   servidor.begin();
 
   Serial.println("[MODO] WiFi (pagina web)");
